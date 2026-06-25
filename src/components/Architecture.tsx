@@ -2,23 +2,50 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// Inline architecture diagram — the visual for a timeline node. Mermaid is dynamically
-// imported and rendered the first time the diagram scrolls near the viewport (lazy),
-// so all diagrams don't render on initial load.
+// Inline architecture diagram: a fit-to-width preview that expands to a full-screen,
+// pannable view at natural size (readable on mobile). Mermaid is dynamically imported
+// and the preview renders lazily when it scrolls near the viewport.
 let initialized = false;
 let counter = 0;
 
-export default function Architecture({ chart, id }: { chart: string; id: string }) {
-  const ref = useRef<HTMLDivElement>(null);
+async function getMermaid() {
+  const mermaid = (await import("mermaid")).default;
+  if (!initialized) {
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: "strict",
+      theme: "dark",
+      fontFamily: "var(--font-mono), ui-monospace, monospace",
+      themeVariables: { fontSize: "15px" },
+      flowchart: { useMaxWidth: false, padding: 14, nodeSpacing: 40, rankSpacing: 55 },
+    });
+    initialized = true;
+  }
+  return mermaid;
+}
+
+export default function Architecture({
+  chart,
+  id,
+  title,
+}: {
+  chart: string;
+  id: string;
+  title?: string;
+}) {
+  const previewRef = useRef<HTMLDivElement>(null);
+  const zoomRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [inView, setInView] = useState(false);
   const [rendered, setRendered] = useState(false);
+  const [zoomRendered, setZoomRendered] = useState(false);
 
   useEffect(() => {
-    const el = ref.current;
+    const el = previewRef.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
+      ([e]) => {
+        if (e.isIntersecting) {
           setInView(true);
           obs.disconnect();
         }
@@ -33,29 +60,16 @@ export default function Architecture({ chart, id }: { chart: string; id: string 
     if (!inView || rendered) return;
     let cancelled = false;
     (async () => {
-      const mermaid = (await import("mermaid")).default;
-      if (!initialized) {
-        mermaid.initialize({
-          startOnLoad: false,
-          securityLevel: "strict",
-          theme: "dark",
-          fontFamily: "var(--font-mono), ui-monospace, monospace",
-          themeVariables: { fontSize: "15px" },
-          // Render at natural size (the container scrolls) instead of shrinking
-          // wide diagrams to fit — otherwise the text becomes unreadable.
-          flowchart: { useMaxWidth: false, padding: 14, nodeSpacing: 40, rankSpacing: 55 },
-        });
-        initialized = true;
-      }
+      const mermaid = await getMermaid();
       try {
         const { svg } = await mermaid.render(`mm-${id}-${++counter}`, chart);
-        if (!cancelled && ref.current) {
-          ref.current.innerHTML = svg;
+        if (!cancelled && previewRef.current) {
+          previewRef.current.innerHTML = svg;
           setRendered(true);
         }
       } catch {
-        if (!cancelled && ref.current) {
-          ref.current.innerHTML = `<pre class="whitespace-pre-wrap text-xs text-muted">${chart.replace(
+        if (!cancelled && previewRef.current) {
+          previewRef.current.innerHTML = `<pre class="whitespace-pre-wrap text-xs text-muted">${chart.replace(
             /</g,
             "&lt;"
           )}</pre>`;
@@ -67,10 +81,63 @@ export default function Architecture({ chart, id }: { chart: string; id: string 
     };
   }, [inView, rendered, chart, id]);
 
+  async function openZoom() {
+    if (!zoomRendered) {
+      try {
+        const mermaid = await getMermaid();
+        const { svg } = await mermaid.render(`mmz-${id}-${++counter}`, chart);
+        if (zoomRef.current) {
+          zoomRef.current.innerHTML = svg;
+          setZoomRendered(true);
+        }
+      } catch {
+        /* preview fallback already shown */
+      }
+    }
+    dialogRef.current?.showModal();
+  }
+
   return (
     <figure className="mt-5 rounded-xl border border-border bg-bg/40 p-4">
-      <figcaption className="mb-3 font-mono text-xs text-accent">Architecture</figcaption>
-      <div ref={ref} className="mermaid-diagram min-h-8 overflow-x-auto" />
+      <figcaption className="mb-3 flex items-center justify-between">
+        <span className="font-mono text-xs text-accent">Architecture</span>
+        <button
+          type="button"
+          onClick={openZoom}
+          aria-label="Expand architecture diagram"
+          className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-mono text-[11px] text-muted transition-colors hover:border-accent/50 hover:text-fg"
+        >
+          Expand ⤢
+        </button>
+      </figcaption>
+
+      <button
+        type="button"
+        onClick={openZoom}
+        aria-label="Expand architecture diagram"
+        className="block w-full cursor-zoom-in text-left"
+      >
+        <div ref={previewRef} className="arch-inline" />
+      </button>
+
+      <dialog ref={dialogRef} className="arch-dialog">
+        <div className="arch-dialog-inner">
+          <div className="arch-dialog-bar">
+            <span className="font-mono text-xs text-accent">
+              {title ? `${title} — architecture` : "Architecture"}
+            </span>
+            <button
+              type="button"
+              onClick={() => dialogRef.current?.close()}
+              aria-label="Close diagram"
+              className="rounded-md border border-border px-2.5 py-1 font-mono text-xs text-muted transition-colors hover:border-accent/50 hover:text-fg"
+            >
+              Close ✕
+            </button>
+          </div>
+          <div ref={zoomRef} className="arch-zoom" />
+        </div>
+      </dialog>
     </figure>
   );
 }

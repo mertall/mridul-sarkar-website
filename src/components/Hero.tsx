@@ -5,17 +5,17 @@ const cta =
 
 export default function Hero() {
   return (
-    <header className="relative mx-auto flex min-h-[88vh] max-w-3xl flex-col justify-center px-6 py-24">
+    <header className="relative mx-auto flex min-h-[80vh] max-w-3xl flex-col justify-center px-6 py-20 sm:min-h-[88vh] sm:py-24">
       <p className="font-mono text-sm text-accent">{hero.location}</p>
 
-      <h1 className="mt-4 text-5xl font-semibold tracking-tight sm:text-6xl">
+      <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
         {hero.name}
       </h1>
-      <p className="mt-3 font-mono text-base text-accent-2 sm:text-lg">
+      <p className="mt-3 font-mono text-sm text-accent-2 sm:text-lg">
         {hero.tagline}
       </p>
 
-      <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
+      <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
         {hero.intro}
       </p>
 

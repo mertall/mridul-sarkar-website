@@ -60,7 +60,9 @@ export default function ProjectCard({
 
         <p className="mt-4 text-[15px] leading-relaxed text-muted">{entry.summary}</p>
 
-        {entry.diagram && <Architecture chart={entry.diagram} id={entry.id} />}
+        {entry.diagram && (
+          <Architecture chart={entry.diagram} id={entry.id} title={entry.title} />
+        )}
 
         {entry.tags && (
           <ul className="mt-5 flex flex-wrap gap-2">

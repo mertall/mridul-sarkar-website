@@ -20,7 +20,7 @@ export default function Experience() {
   const { active } = useHighlight();
 
   return (
-    <aside aria-label="Experience" className="self-start lg:sticky lg:top-8">
+    <aside aria-label="Experience" className="order-2 self-start lg:order-1 lg:sticky lg:top-8">
       <h2 className="mb-6 font-mono text-xs uppercase tracking-[0.2em] text-muted">
         Experience
       </h2>

@@ -9,9 +9,9 @@ export default function Home() {
     <>
       <Hero />
       <HighlightProvider>
-        <div className="mx-auto max-w-6xl px-6 pb-24 lg:grid lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-12">
+        <div className="mx-auto flex max-w-6xl flex-col gap-12 px-6 pb-24 lg:grid lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-12">
           <Experience />
-          <main className="mt-14 lg:mt-0">
+          <main className="order-1 lg:order-2">
             <Projects />
           </main>
         </div>
