@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# mridul-sarkar.com
 
-## Getting Started
+Personal showcase site for Mridul Sarkar — a single, scrollable, animated career
+timeline. Built with Next.js (App Router) + Tailwind v4, configured for static
+export so it hosts free on Vercel or GitHub Pages.
 
-First, run the development server:
+## Develop
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev      # http://localhost:3000
+npm run build    # static export → ./out
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Editing content
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+All copy lives in **`src/content.ts`** — `hero`, `socials`, and the `timeline`
+array (newest first). Add/edit a timeline node there; the UI maps over it, no JSX
+changes needed.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Email / links:** edit `socials`. The contact email defaults to
+  `mridulsarkarbiz@gmail.com` — swap if you prefer another.
+- **Project dates** (VisionSearch, Quantum hackathon, Spectrogram) are best-guess
+  year labels — adjust the `period` fields to taste.
+- **Pictures:** each role/project node renders a generated gradient placeholder.
+  Drop a real image in `public/images/` and set `image: "/images/foo.png"` on that
+  entry to use it.
+- **Résumé:** `public/resume.pdf` (regenerate from your `.docx`, or replace with a
+  designed PDF).
 
-## Learn More
+## Deploy
 
-To learn more about Next.js, take a look at the following resources:
+Static `out/` works on any static host.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Vercel:** import the repo — it detects Next.js. Add `mridul-sarkar.com` as a
+  custom domain and point DNS as Vercel instructs.
+- **GitHub Pages:** push `out/` (or use a Pages action), add a `CNAME` for the
+  domain.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Stack
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next.js 16 · React 19 · Tailwind v4 · TypeScript. Scroll animations use native
+`IntersectionObserver` + CSS (no animation library); `prefers-reduced-motion` is
+respected.

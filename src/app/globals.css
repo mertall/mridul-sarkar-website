@@ -1,26 +1,61 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* Dark, minimal, technical. Single forced theme — no light mode. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: #0a0b0e;
+  --color-surface: #14161b;
+  --color-surface-2: #1b1e25;
+  --color-border: #262a33;
+  --color-fg: #e7e9ee;
+  --color-muted: #9aa1ad;
+  --color-accent: #7c9cff;
+  --color-accent-2: #5eead4;
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  /* subtle radial wash so the dark page isn't flat */
+  background-image:
+    radial-gradient(60rem 40rem at 80% -10%, rgba(124, 156, 255, 0.08), transparent 60%),
+    radial-gradient(50rem 30rem at -10% 10%, rgba(94, 234, 212, 0.06), transparent 55%);
+  background-attachment: fixed;
+}
+
+/* Scroll-reveal: items start hidden+offset, get .is-visible from IntersectionObserver. */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Diagrams render at natural size; the container scrolls horizontally so text
+   stays legible instead of being shrunk to fit. */
+.mermaid-diagram svg {
+  max-width: none;
+  height: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
