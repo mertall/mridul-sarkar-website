@@ -339,12 +339,13 @@ export const timeline: TimelineEntry[] = [
     title: "Enterprise Data Platform",
     org: "Accenture Federal Services",
     summary:
-      "A production system serving 100k+ users at 99.9% SLOs with p95 latency cut 40%. I built the full backend — a streaming API, data ingestion, processing, and serving APIs — with authentication handled by the DoD client. I built the Elasticsearch indexing pipelines with NLP enrichment that boosts discoverability: back- and forward-translation, synonym augmentation, and generative text creation. I also architected and built a multi-tenant, cross-organization user-profile service that tracks preferences and metadata from external orgs, and built an MCP server exposing the platform's APIs behind an AI agentic chat interface to explore and understand new data and to upload new data. Architecture shown high-level (proprietary/federal).",
-    tags: ["Data platform", "Streaming API", "Elasticsearch", "NLP enrichment", "MCP server", "Agentic chat", "Multi-tenant", "SLOs", "Deployed"],
+      "A production system serving 100k+ users at 99.9% SLOs with p95 latency cut 40%. I built the full backend — a streaming API, data ingestion, processing, and serving APIs — with authentication handled by the DoD client. I built the Elasticsearch indexing pipelines with NLP enrichment that boosts discoverability: back- and forward-translation, synonym augmentation, and generative text creation. I designed a custom data-versioning pipeline that's ACID-compliant with RBAC enforcement, so every dataset revision is transactional, access-scoped, and auditable. For observability I instrumented the FastAPI serving layer to emit per-request latency into Elasticsearch and leaned on its aggregation framework — percentile aggregations (TDigest) for p95 SLO tracking, plus date_histogram, terms, and cardinality aggregations rolled up via continuous transforms — to get latency and usage aggregates across the entire platform; that telemetry drove the p95 −40%. I also architected and built a multi-tenant, cross-organization user-profile service that tracks preferences and metadata from external orgs, and built an MCP server exposing the platform's APIs behind an AI agentic chat interface to explore and understand new data and to upload new data. Architecture shown high-level (proprietary/federal).",
+    tags: ["Data platform", "Streaming API", "Elasticsearch", "NLP enrichment", "Data versioning", "ACID", "RBAC", "FastAPI", "Elasticsearch aggregations", "p95 latency", "MCP server", "Agentic chat", "Multi-tenant", "SLOs", "Deployed"],
     diagram: `flowchart LR
   SRC["Source Systems"] --> ING["Data Ingestion"]
   ING --> STREAM["Streaming API"]
-  ING --> STORE["Storage Layer"]
+  ING --> VER["Data Versioning Pipeline — ACID + RBAC"]
+  VER --> STORE["Storage Layer"]
   STORE --> PROC["Processing + Transformations"]
   subgraph Enrich["NLP Enrichment — discoverability"]
     TRANS["Back + Forward Translation"]
@@ -366,7 +367,13 @@ export const timeline: TimelineEntry[] = [
   PROFILE["Multi-tenant User Profile Service"] --> API
   EXT["External Orgs"] -.preferences + metadata.-> PROFILE
   AUTH["AuthN + AuthZ — DoD client"] -.-> API
-  OBS["Observability + SLO Monitoring"] -.-> API`,
+  subgraph Obs["Observability — latency + SLOs"]
+    METRICS["FastAPI per-request latency"]
+    AGG["Elasticsearch aggregations — p95 percentiles, date_histogram, terms, cardinality"]
+  end
+  API -.latency telemetry.-> METRICS
+  METRICS --> AGG
+  AGG -.p95 −40% SLO tracking.-> API`,
   },
   {
     id: "acc-rag",
@@ -376,16 +383,17 @@ export const timeline: TimelineEntry[] = [
     title: "GenAI Retrieval Prototype (RAG)",
     org: "Accenture Federal Services",
     summary:
-      "An early production bet on vector search, adopted as the technology first emerged: documents embedded with Sentence Transformers into an Elasticsearch vector DB, retrieved for RAG, improving Recall@10 ~20%. Informed an LLM-deployment white paper for the Intelligence Community. Architecture shown high-level (proprietary/federal).",
-    tags: ["RAG", "Sentence Transformers", "Elasticsearch vector DB", "Evals", "Early adopter"],
+      "An early production bet on vector search, adopted as the technology first emerged: documents embedded with Sentence Transformers into an Elasticsearch vector DB, retrieved for RAG. An LLM-as-judge reranks the vector DB returns — scoring each candidate's relevance before it reaches the generator — which lifted Recall@10 ~20% over raw similarity retrieval. Informed an LLM-deployment white paper for the Intelligence Community. Architecture shown high-level (proprietary/federal).",
+    tags: ["RAG", "Sentence Transformers", "Elasticsearch vector DB", "LLM-as-judge", "Reranking", "Evals", "Early adopter"],
     diagram: `flowchart LR
   DOCS["Document Corpus"] --> CHUNK["Chunk + Sentence-Transformers Embed"]
   CHUNK --> VDB["Elasticsearch Vector DB"]
   Q["User Query"] --> RET["Retriever"]
   VDB --> RET
-  RET --> LLM["LLM"]
+  RET --> JUDGE["LLM-as-Judge — rerank vector DB returns"]
+  JUDGE --> LLM["LLM"]
   LLM --> ANS["Response"]
-  EVAL["Eval Harness — Recall@10"] -.-> RET`,
+  EVAL["Eval Harness — Recall@10 +20%"] -.-> JUDGE`,
   },
   {
     id: "acc-federated-search",
