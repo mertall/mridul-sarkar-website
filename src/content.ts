@@ -385,7 +385,8 @@ export const timeline: TimelineEntry[] = [
   VDB --> RET
   RET --> LLM["LLM"]
   LLM --> ANS["Response"]
-  EVAL["Eval Harness — Recall@10"] -.-> RET`,
+  EVAL["Eval Harness — Recall@10"] -.-> RET
+  JUDGE["LLM-as-Judge — answer quality"] -.-> ANS`,
   },
   {
     id: "acc-federated-search",

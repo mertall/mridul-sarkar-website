@@ -31,12 +31,13 @@ function inline(text: string) {
   );
 }
 
-// Blank lines separate blocks. A block whose lines all start with "• " is a list;
-// otherwise it's a paragraph (internal newlines preserved via whitespace-pre-line).
+// Blank lines separate blocks. A block whose lines all start with "* " or "• " is a
+// list; otherwise it's a paragraph (internal newlines preserved via whitespace-pre-line).
 function renderBody(body: string) {
   return body.split(/\n{2,}/).map((block, i) => {
     const lines = block.split("\n");
-    if (lines.every((l) => l.startsWith("• "))) {
+    const isList = lines.every((l) => l.startsWith("* ") || l.startsWith("• "));
+    if (isList) {
       return (
         <ul key={i} className="my-4 list-disc space-y-1 pl-6 text-muted">
           {lines.map((l, j) => (
@@ -64,7 +65,7 @@ export default function AgenticEngineering() {
           ← back
         </Link>
 
-        <header className="mt-8 border-b border-border pb-8">
+        <header className="mt-8">
           <p className="font-mono text-sm text-accent-2">Series</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
             {series.title}
@@ -74,15 +75,39 @@ export default function AgenticEngineering() {
           </p>
         </header>
 
-        {series.posts.map((post) => (
-          <section
-            key={post.title}
-            className="mt-12 border-t border-border pt-12 first:border-t-0"
-          >
-            <h2 className="text-2xl font-semibold tracking-tight text-fg">
-              {inline(post.title)}
+        <nav
+          aria-label="Contents"
+          className="mt-8 rounded-xl border border-border bg-surface px-5 py-4"
+        >
+          <p className="font-mono text-xs uppercase tracking-wider text-muted">
+            Contents
+          </p>
+          <ol className="mt-3 space-y-1.5">
+            {series.sections.map((s, i) => (
+              <li key={s.id}>
+                <a
+                  href={`#${s.id}`}
+                  className="group flex gap-3 text-sm text-fg transition-colors hover:text-accent"
+                >
+                  <span className="font-mono text-muted group-hover:text-accent">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span>{s.tocLabel}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+
+        {series.sections.map((s) => (
+          <section key={s.id} className="mt-12 border-t border-border pt-12">
+            <h2
+              id={s.id}
+              className="scroll-mt-20 text-2xl font-semibold tracking-tight text-fg"
+            >
+              {inline(s.heading)}
             </h2>
-            <div className="mt-4">{renderBody(post.body)}</div>
+            <div className="mt-4">{renderBody(s.body)}</div>
           </section>
         ))}
       </article>

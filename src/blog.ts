@@ -1,10 +1,13 @@
 // Long-form writing. Same single-source pattern as content.ts — the page maps over this.
-// Each post body is plain text: blank lines separate blocks, "• " lines become bullets,
-// `backticks` become inline code. See renderBody() in the blog page.
+// Each section body is plain text: blank lines separate blocks, "* "/"• " lines become
+// bullets, `backticks` become inline code. See renderBody() in the blog page.
 
-export interface BlogPost {
-  /** Section heading, e.g. "Post 1 — I Did Not Start With Agents". */
-  title: string;
+export interface Section {
+  /** Anchor id used by the table of contents, e.g. "secure-environments". */
+  id: string;
+  /** Short, friendly label shown in the table of contents. */
+  tocLabel: string;
+  heading: string;
   body: string;
 }
 
@@ -13,214 +16,232 @@ export interface Series {
   title: string;
   description: string;
   date: string;
-  posts: BlogPost[];
+  sections: Section[];
 }
 
 export const agenticEngineering: Series = {
   slug: "agentic-engineering",
   title: "Agentic Engineering",
   description:
-    "A series on how my software engineering workflow changed as AI moved from chat, to coding assistant, to planning partner, to agentic system.",
+    "How my software engineering workflow changed as AI moved from chat, to coding assistant, to planning partner, to agentic system.",
   date: "2026-06-30",
-  posts: [
+  sections: [
     {
-      title: "Intro — Why I'm Writing About Agentic Engineering",
-      body: `I'm starting a series on agentic engineering.
-
-Not as a "here are the tools I use" series.
-
-More as a record of how my software engineering workflow changed as AI moved from chat, to coding assistant, to planning partner, to agentic system.
-
-I started using ChatGPT casually in 2022 as a rubber duck for personal projects.
-
-Since then, the workflow has gone through a few phases:
-
-• using AI when Google was not enough
-• learning the boundaries of AI in secure engineering environments
-• using Claude Code to build working prototypes in minutes
-• splitting planning and implementation across different models
-• using Codex as a coding and review agent
-• isolating agent work with branches and worktrees
-• building PR review loops
-• experimenting with local inference
-• moving toward loop-based engineering workflows
-
-The biggest lesson so far:
-
-Agentic engineering is not about letting AI randomly mutate a repo.
-
-It is about putting AI inside a real software engineering process.
-
-Scope the work.
-Isolate the branch.
-Review the diff.
-Run the checks.
-Update dependent PRs.
-Control the loop.
-Keep human judgment in the right places.
-
-That is the story I want to tell in this series.
-
-How I started.
-What broke.
-What worked.
-Where I think the workflow is going next.`,
-    },
-    {
-      title: "Post 1 — I Did Not Start With Agents",
+      id: "rubber-duck",
+      tocLabel: "Where it started",
+      heading: "From ChatGPT as a Rubber Duck to Agentic Engineering",
       body: `I did not start with "agentic engineering."
 
 I started with ChatGPT in 2022 as a rubber duck for personal projects.
 
-At first, the value was simple.
-
-I could paste a code snippet or describe a weird implementation issue, and ChatGPT could often point me toward the relevant idea faster than Google.
-
-Not always the perfect answer.
-
-But often the right direction.
-
-Sometimes the problem with search is that you do not know the exact phrase to search for.
-
-You have a code smell.
-An error pattern.
-A half-formed architectural question.
-A library issue that is hard to describe.
-
-ChatGPT was useful because it could reason from the context I already had.
-
-At that point, it was not writing full systems for me.
+At the time, the workflow was simple. I would get stuck on a piece of code, paste in a snippet, describe the issue, and use ChatGPT to help me reason through the problem. It was not writing full systems for me. It was not operating inside my repo. It was not running commands, creating branches, opening PRs, or reviewing code.
 
 It was helping me think.
 
-The workflow was still manual:
+That distinction matters because my path into agentic engineering did not begin with autonomy. It began with leverage.
+
+The first thing that stood out was that ChatGPT could sometimes find the right idea faster than Google. Not because it was always correct, and not because search stopped being useful, but because search often requires you to know the exact phrase for the problem you are trying to solve.
+
+A lot of engineering problems do not start that cleanly.
+
+Sometimes you have:
+
+* a vague error pattern
+* a code smell
+* a half-formed architectural question
+* a library behavior you do not fully understand
+* a stack trace that points in three possible directions
+* a pattern you recognize but cannot quite name
+
+Traditional search is good when you know what to ask.
+
+ChatGPT was useful when I had context but not the right query.
+
+That was the first shift for me. AI was not yet an engineer in the loop. It was a better reasoning surface. I could describe the problem in the language I had, and it would help me discover the language I needed.
+
+The workflow still looked like this:
 
 Ask the question.
+
 Read the response.
+
 Adapt the code.
-Test it myself.
+
+Test it manually.
+
 Fix what was wrong.
 
-That phase matters because it was the foundation.
+Move on.
 
-Before AI became an agent in my workflow, it became a better debugging partner.
+That phase was useful, but it was not agentic engineering. It was AI-assisted thinking.
 
-Before it operated inside the repo, it helped me reason outside of it.
-
-That was the first step.
-
-Not autonomy.
-
-Leverage.`,
+The next phase came from a very different environment.`,
     },
     {
-      title: "Post 2 — Secure Environments Taught Me Boundaries",
+      id: "secure-environments",
+      tocLabel: "Learning the boundaries",
+      heading: "Secure Environments Taught Me Boundaries",
       body: `For most of my tenure in the federal space, AI was not allowed in the engineering workflow.
 
 That shaped how I thought about it.
 
-A lot of people first encountered AI as a productivity shortcut.
-
-I first encountered the serious version of AI through the lens of boundaries.
+A lot of people encountered AI first as a productivity shortcut. I encountered the serious version of AI through the lens of boundaries.
 
 Where can the model run?
+
 What data can it see?
+
 What systems can it touch?
+
 What needs to be logged?
+
 Who approves the workflow?
+
 How does it fit into the existing DevOps pipeline?
 
-Toward the end of my time there, we started looking at how agentic AI could be integrated into secure engineering environments.
+What happens when it makes a mistake?
 
-That changed my view of AI in software development.
+What information should never leave the environment?
 
-The question was not just:
-
-"Can the model do the task?"
+Toward the end of my time there, we started looking at how LLMs and agentic AI could be integrated into secure engineering workflows. That was a very different conversation from "can this model write code?"
 
 The better question was:
 
-"Can the model do the task inside the right controls?"
+Can this model perform useful work inside the right controls?
 
-That distinction matters.
+That distinction has stayed with me.
 
-Agentic engineering is not just about capability.
+Agentic engineering is not just about capability. It is about capability inside constraints.
 
-It is about capability inside constraints.
+A model that can write code is interesting.
 
-The model needs boundaries.
-The workflow needs permissions.
-The system needs review gates.
-The output needs inspection.
-The human needs final judgment.
+A model that can write code inside a controlled engineering process is useful.
 
-That experience made me less interested in AI as a toy and more interested in AI as an engineering system.
+A model that can inspect a repository, understand boundaries, propose a plan, make scoped changes, run checks, ask for review, and avoid touching systems it should not touch starts to become something more operationally meaningful.
 
-If AI is going to touch real software, it has to fit into real engineering governance.`,
+This is where my thinking changed.
+
+AI in software engineering is not just a chatbot.
+
+It is not just autocomplete.
+
+It is not just a productivity toy.
+
+If it is going to touch real systems, it needs to fit into real engineering governance.
+
+That means:
+
+* access control
+* environment boundaries
+* logging
+* repeatable workflows
+* approval gates
+* code review
+* auditability
+* rollback paths
+* clear human ownership
+
+That foundation became important later. When I started using AI more aggressively in my own development workflow, I did not think of the problem as "how do I make the model autonomous?"
+
+I thought of it as:
+
+How do I put the model inside a process where it can be useful without being reckless?`,
     },
     {
-      title: "Post 3 — Claude Code Was the First Real Inflection Point",
-      body: `In December 2025, Claude Code was the first tool that genuinely changed how I built software.
+      id: "claude-code",
+      tocLabel: "The first inflection point",
+      heading: "Claude Code Was the First Real Inflection Point",
+      body: `The first tool that genuinely changed how I built software was Claude Code.
+
+By December 2025, I had used plenty of AI coding workflows. I had tried tools like Windsurf and Cursor. They were useful, but I still preferred my own IDE experience combined with ChatGPT when search was not enough.
+
+Claude Code felt different.
 
 Not because it was perfect.
 
-Because, with the right context and constraints, it could make decent engineering decisions inside a real codebase.
+It was not.
 
-That was different.
+It made mistakes. It needed direction. It could overreach. It could make incorrect assumptions. It could produce code that looked plausible but needed inspection.
+
+But with the right prompting, context, and decision boundaries, it could make decent engineering decisions inside a real codebase.
+
+That was the important part.
 
 Before that, AI helped me reason through implementation.
 
 With Claude Code, AI started helping me execute implementation.
 
-If I prompted it properly, gave it the right context, and made the decision boundaries clear, it could produce working prototypes in minutes instead of days.
-
-The important part was not simply saying:
+The difference was not simply saying:
 
 "Build this."
 
-The important part was telling it:
+The difference was giving it an engineering frame:
 
 Here is the goal.
+
 Here is the architecture.
+
+Here is the current state of the repo.
+
 Here is what you can change.
+
 Here is what you should not touch.
-Here is when you need to check in.
+
+Here is when you need to check in with me.
+
 Here is the quality bar.
 
-That changed the output.
+Here is how to think about the tradeoffs.
 
-Claude Opus was especially strong at planning and architecture.
+Here is what "done" means.
 
-It could reason through product flows, system boundaries, sequencing, and tradeoffs.
+When I treated the model like an unconstrained magic box, the results were inconsistent.
+
+When I treated it like a capable engineer operating under constraints, the results improved dramatically.
+
+That became one of the first practical lessons:
+
+A strong coding agent is only as useful as the boundaries you give it.
+
+Claude Code could produce working prototypes in minutes that previously would have taken days. That did not mean the prototypes were production-ready. It meant the time from idea to working surface area collapsed.
+
+Instead of spending hours setting up boilerplate, wiring components, building first-pass API handlers, or exploring implementation paths, I could get to a working version quickly and spend my time evaluating direction.
+
+That changed the role of the human engineer.
+
+I was no longer just typing every line.
+
+I was defining the problem, shaping the architecture, reviewing the output, and deciding which tradeoffs were acceptable.
+
+Claude Opus was especially strong at planning and architecture. It could reason through product flows, system boundaries, sequencing, and tradeoffs. It could hold a large plan in mind and explain what needed to happen first.
 
 But I still did not want one model doing everything.
 
-That became the next step in my workflow.
+That became the next shift.
 
 Instead of asking:
 
-"Which model is best?"
+Which model is best?
 
 I started asking:
 
-"Which model is best for which role?"
-
-That question changed everything.`,
+Which model is best for which role?`,
     },
     {
-      title: "Post 4 — Claude Plans, Codex Codes",
+      id: "claude-plans-codex-codes",
+      tocLabel: "Claude plans, Codex codes",
+      heading: "Claude Plans, Codex Codes",
       body: `The first agentic architecture that really worked for me was simple:
 
 Claude plans.
+
 Codex codes.
 
-Claude Opus was strong at long-form planning and architecture.
-
-It was good at understanding the broader system, decomposing work, identifying tradeoffs, and deciding what needed to happen first.
+Claude Opus was strong at long-form planning and architecture. It was useful for understanding a broader system, decomposing work, identifying tradeoffs, and deciding what needed to happen first.
 
 Codex was strong at implementation.
 
-At the time Codex first came out, its coding ability felt noticeably stronger for certain tasks. People described it as feeling like a senior engineer, and in the right lane, I understood why.
+At the time Codex first came out, its coding ability felt noticeably stronger for certain implementation tasks. People described it as feeling like a senior engineer, and in the right lane, I understood why.
 
 So I stopped treating models as interchangeable.
 
@@ -230,34 +251,57 @@ Codex became the implementation agent.
 
 The human role became scope, constraints, sequencing, and final judgment.
 
-That was the actual pattern:
+The workflow began to look like this:
 
-Claude creates the plan.
-Codex executes scoped tasks.
+Claude reasons through the product goal and architecture.
+
+Claude decomposes the work into scoped implementation tasks.
+
+Codex executes individual tasks.
+
 Git isolates the work.
-PRs create review boundaries.
-Review loops catch issues.
-Human judgment decides what ships.
 
-This was the first time the workflow felt less like "AI-assisted coding" and more like agentic engineering.
+PRs create review boundaries.
+
+Review loops catch issues.
+
+The human reviews the system-level outcome and decides what ships.
+
+This was the first time the workflow felt less like AI-assisted coding and more like agentic engineering.
 
 Not one model doing everything.
 
 Not blind autonomy.
 
+Not "vibe coding."
+
 Role assignment inside an engineering process.
 
-That is where the leverage started to show up.`,
+That is where the leverage started to show up.
+
+The key realization was that different models have different strengths. Some are better at long-context reasoning. Some are better at implementation. Some are better at tool use. Some are better at review. Some are better at summarization. Some are good enough locally for private productivity tasks but not strong enough for complex production architecture.
+
+Once you accept that, the question changes.
+
+The question is no longer:
+
+How do I prompt one model perfectly?
+
+The question becomes:
+
+How do I design a workflow where the right model handles the right part of the engineering process?
+
+That is a different kind of engineering problem.`,
     },
     {
-      title: "Post 5 — AI Overwrite Sickness Is Usually a Process Problem",
-      body: `A common complaint I hear from engineers and friends using AI coding tools:
+      id: "overwrite-sickness",
+      tocLabel: "It's a process problem",
+      heading: "AI Overwrite Sickness Is Usually a Process Problem",
+      body: `One of the most common complaints I hear from engineers and friends using AI coding tools is:
 
 "AI keeps overwriting my work."
 
-I agree.
-
-It is annoying.
+I agree that it is annoying.
 
 But I do not think the core problem is always the model.
 
@@ -267,35 +311,58 @@ If you let an agent edit a broad surface area on one branch, with vague scope, n
 
 That is not unique to AI.
 
-Human teams have the same problem when they skip basic software engineering practices.
+Human teams create the same problems when they skip basic software engineering practices.
 
 The difference is that AI makes the failure happen faster.
 
-The fix is not magic.
+A human developer might slowly create merge conflicts over a few days.
 
-It is normal SWE discipline:
+An AI agent can create the same chaos in minutes.
+
+That does not mean the solution is exotic.
+
+The solution is mostly normal software engineering discipline:
 
 Create a branch.
+
 Scope the feature.
+
 Open a PR.
+
 Review the diff.
+
 Implement feedback.
+
 Pull the latest changes.
+
 Merge upstream changes into active branches.
+
 Keep dependent PRs synchronized.
 
-AI coding tools make software engineering fundamentals more important, not less.
+Avoid letting multiple streams of work mutate the same files without coordination.
 
-This is especially obvious when people without a software engineering background start using agents to code.
-
-They experience branch conflicts, overwrites, stale changes, and messy diffs as "AI problems."
+This is especially obvious when people without a software engineering background start using agents to code. They experience stale branches, overwritten files, merge conflicts, noisy diffs, and broken assumptions as "AI problems."
 
 But many of those problems already have solutions.
 
-Agentic engineering works better when it borrows from the practices good engineering teams already use.`,
+Good engineering teams already know how to manage parallel work. They use branches, pull requests, code review, CI, feature flags, small diffs, and merge discipline.
+
+Agentic engineering does not make those fundamentals less important.
+
+It makes them more important.
+
+The more powerful the agent, the more important the process around it becomes.
+
+That became one of the central ideas in my workflow:
+
+Do not just make the model smarter.
+
+Make the environment safer.`,
     },
     {
-      title: "Post 6 — Worktrees Made Agents Usable",
+      id: "worktrees",
+      tocLabel: "Worktrees & isolation",
+      heading: "Worktrees Made Agents More Usable",
       body: `Once I started using agents seriously, I needed a way to let them work without stepping on each other.
 
 That is where worktrees became important.
@@ -305,55 +372,89 @@ Instead of letting one model make broad edits on one branch, I could create sepa
 Each agent had its own lane.
 
 One branch.
+
 One feature scope.
+
 One PR.
+
 One review boundary.
 
 That made parallel agent work much safer.
 
-But worktrees alone were not enough.
+The important thing was not just parallelism. It was isolation.
 
-The key was sequencing.
+If an agent was working on a billing flow, another agent should not be casually editing the same files for a dashboard refactor. If one PR changed the database schema, other related work needed to understand that before continuing. If one branch landed first, dependent branches needed to pull in those changes before moving forward.
 
-If PR 1 merged, then PR 2, PR 3, and any other related branches needed to pull in the latest changes before continuing.
-
-Otherwise, an agent could keep working on stale code and accidentally undo work that had already landed.
-
-That is where cascading PR discipline mattered.
+This is where cascading PR discipline mattered.
 
 The workflow became:
 
 Scope the feature.
+
 Create the isolated worktree.
+
 Let the agent implement.
+
 Open a PR.
+
 Review the changes.
+
 Merge when ready.
+
 Update dependent branches.
+
 Continue.
 
-This was one of the biggest practical unlocks for me.
+If PR 1 merged, then PR 2, PR 3, and any other related branches needed to pull in the latest changes before proceeding.
 
-The agents became more useful when the repo became harder for them to damage.
+Otherwise, an agent could keep working on stale code and accidentally undo work that had already landed.
 
-That is a pattern I keep coming back to:
+That was one of the biggest practical unlocks for me.
 
-Do not just make the model smarter.
+Agents became more useful when the repo became harder for them to damage.
 
-Make the workflow safer.`,
+This is also where human skill still mattered. Feature scoping did not disappear. In fact, it became more important.
+
+A task needs to be sized correctly for an agent.
+
+Too small, and the coordination overhead is not worth it.
+
+Too large, and the agent touches too much of the system.
+
+A good agent-sized task has a clear objective, a narrow file surface area, a testable outcome, and a defined stopping point.
+
+For example:
+
+"Add a status filter to the project list page and update the API query to support it" is a good scoped task.
+
+"Improve the dashboard" is not.
+
+The model can execute, but the human still needs to define the unit of work.
+
+That is engineering judgment.`,
     },
     {
-      title: "Post 7 — The First Skill I Built Was a Process Wrapper",
+      id: "process-wrapper",
+      tocLabel: "Wrapping the process in a skill",
+      heading: "The First Skill I Built Was a Process Wrapper",
       body: `Eventually, I got tired of manually coordinating the same workflow.
 
 Scope the feature.
+
 Create the branch.
+
 Run the agent.
+
 Open the PR.
+
 Ask for review.
+
 Fix the review.
+
 Check if related PRs need updating.
+
 Pull latest changes.
+
 Continue.
 
 So I built a skill for myself.
@@ -370,50 +471,76 @@ I wanted to make the workflow safer and more repeatable.
 
 The skill helped coordinate:
 
-• feature scoping
-• branch and worktree isolation
-• PR creation
-• Codex review
-• feedback loops
-• dependent PR updates
-• merge sequencing
+* feature scoping
+* branch and worktree isolation
+* PR creation
+* Codex review
+* feedback loops
+* dependent PR updates
+* merge sequencing
 
 Feature scoping was still my job.
 
-The skill just helped enforce the sequence.
+The skill helped enforce the sequence.
 
 If a PR was merged, any other PR that was part of the same plan needed to pull in the latest changes before proceeding.
 
 That reduced the "AI overwrote my work" problem because the workflow stopped allowing agents to operate on stale assumptions.
 
-One of the biggest lessons:
+This is one of the more important lessons I learned:
 
 Agentic engineering is not just prompting.
 
-It is turning good engineering judgment into reusable workflows.`,
+It is turning good engineering judgment into reusable workflows.
+
+A prompt is an instruction.
+
+A skill is a repeatable process.
+
+A process can preserve hard-won lessons.
+
+For example, instead of reminding the model every time not to make broad unrelated changes, the workflow can enforce scoped execution. Instead of manually remembering to update dependent branches, the workflow can treat that as part of the plan. Instead of hoping review happens, the workflow can make review part of the loop.
+
+That is when the system starts to compound.
+
+You are no longer just using the model.
+
+You are building the operating procedure around the model.`,
     },
     {
-      title: "Post 8 — PR Review Loops Changed the Quality Bar",
+      id: "pr-review-loops",
+      tocLabel: "PR review loops",
+      heading: "PR Review Loops Changed the Quality Bar",
       body: `One of the most useful workflows I built was a PR review loop.
 
 The idea was simple.
 
 An agent creates a PR.
+
 Another agent reviews it.
+
 The implementation agent fixes the findings.
+
 The reviewer checks again.
+
 The loop continues until there are no more findings.
 
 In my case, I used Codex review.
 
 The flow looked like this:
 
-Create PR from the branch.
+Create a PR from the branch.
+
 Comment \`@codex review\`.
+
 Wait for feedback.
+
 Apply the review findings.
+
 Push updates.
+
 Request review again.
+
 Repeat until clean.
 
 This changed the role of AI in the workflow.
@@ -426,7 +553,7 @@ That does not mean I stopped reviewing.
 
 It means my review started at a higher level.
 
-Instead of spending all my time catching obvious issues, I could focus on architecture, product behavior, edge cases, and whether the change actually matched the intent.
+Instead of spending all my time catching obvious issues, I could focus more on architecture, product behavior, edge cases, and whether the change actually matched the intent.
 
 The agent can write code.
 
@@ -438,12 +565,30 @@ But the human still owns judgment.
 
 That is the line I try to keep clear.
 
-Agentic engineering is not removing review.
+AI review is useful, but it is not the same as accountability. A model can catch issues, but it does not own the consequences of shipping the system. The human engineer still has to understand the change, inspect the diff, and decide whether the result is acceptable.
 
-It is making review loops faster, more repeatable, and easier to run before the human does the final inspection.`,
+The value of the PR review loop is that it moves more defects earlier in the process.
+
+It can catch missing tests, inconsistent patterns, typing issues, naming problems, edge cases, dead code, or mismatches with the requested behavior.
+
+It can also miss things.
+
+It can misunderstand product intent.
+
+It can approve a change that is locally correct but globally wrong.
+
+It can fail to notice that the implementation makes the system harder to maintain.
+
+That is why the loop is not a replacement for engineering review.
+
+It is a pre-review accelerator.
+
+It gets the PR into better shape before the human does the final inspection.`,
     },
     {
-      title: "Post 9 — Why I Started Moving Toward Local Inference",
+      id: "local-inference",
+      tocLabel: "Going local",
+      heading: "Why I Started Moving Toward Local Inference",
       body: `At one point, I started thinking seriously about local inference.
 
 Not because the API was too expensive.
@@ -462,13 +607,13 @@ So I built a 128 GB unified memory workstation for less than a comparable Mac St
 
 Then I started experimenting with a local architecture:
 
-• Qwen as the chat model
-• Gemma as the orchestrator
-• Qwen as the tool router
-• dynamic personas based on task type
-• background memory monitoring
-• agents spinning up and down based on workload
-• Discord as the interface
+* Qwen as the chat model
+* Gemma as the orchestrator
+* Qwen as the tool router
+* dynamic personas based on task type
+* background memory monitoring
+* agents spinning up and down based on workload
+* Discord as the interface
 
 One Gemma instance and one Qwen instance stayed on.
 
@@ -479,16 +624,52 @@ That opened a different category of agentic workflow.
 Not just code generation.
 
 Local planning.
+
 Local productivity.
+
 Local routing.
+
 Local workflows around private context.
 
 The point was not to replace frontier models.
 
-The point was to have a private, controllable layer for the work that belonged on my own machine.`,
+The point was to have a private, controllable layer for work that belonged on my own machine.
+
+This is an important distinction.
+
+Local inference is not automatically better.
+
+It is not always cheaper.
+
+It is not always smarter.
+
+But it gives you different properties:
+
+* privacy
+* control
+* availability
+* experimentation
+* offline resilience
+* custom routing
+* private memory
+* lower concern around sensitive local context
+
+That made it useful for a specific class of workflows.
+
+For high-end architecture and complex coding, I still wanted frontier models.
+
+For personal productivity, local planning, private notes, routing, and lightweight automation, local models became much more interesting.
+
+This reinforced the same pattern again:
+
+The question is not "which model wins?"
+
+The question is "which model belongs in which part of the system?"`,
     },
     {
-      title: "Post 10 — Loop Engineering Is the Next Step",
+      id: "loop-engineering",
+      tocLabel: "Loop engineering",
+      heading: "Loop Engineering Is the Next Step",
       body: `The next major shift for me was loop engineering.
 
 Prompt engineering is about asking the model for a good answer.
@@ -496,11 +677,17 @@ Prompt engineering is about asking the model for a good answer.
 Loop engineering is about creating a system that keeps working toward an objective.
 
 Plan.
+
 Act.
+
 Check.
+
 Repair.
+
 Retry.
+
 Review.
+
 Stop.
 
 That changed how I thought about agents.
@@ -509,14 +696,14 @@ A good loop is not just "run the model again."
 
 A good loop has structure:
 
-• clear objective
-• scoped permissions
-• observable state
-• failure detection
-• rollback or repair behavior
-• review gates
-• stop conditions
-• traceability
+* clear objective
+* scoped permissions
+* observable state
+* failure detection
+* rollback or repair behavior
+* review gates
+* stop conditions
+* traceability
 
 This was the part I had avoided for a while.
 
@@ -538,10 +725,42 @@ A model can produce an answer.
 
 A loop can produce progress.
 
-That distinction matters.`,
+That distinction matters.
+
+A single prompt might generate a plan.
+
+A loop can implement part of the plan, run checks, detect failure, revise the implementation, request review, repair findings, and stop when a condition is satisfied.
+
+That is much closer to how engineering work actually happens.
+
+Real software development is not one-shot.
+
+It is iterative.
+
+You build.
+
+You test.
+
+You inspect.
+
+You discover something wrong.
+
+You adjust.
+
+You ask for review.
+
+You fix the review.
+
+You merge.
+
+You learn from the result.
+
+Agentic engineering becomes powerful when the AI workflow reflects that reality.`,
     },
     {
-      title: "Post 11 — `gmwyd` Is an Artifact of the Workflow",
+      id: "gmwyd",
+      tocLabel: "Building gmwyd",
+      heading: "`gmwyd` Is an Artifact of the Workflow",
       body: `One thing I started building from this agentic engineering workflow is \`gmwyd\`.
 
 I do not think of it as the center of the story.
@@ -555,13 +774,21 @@ The problem was not that I needed another chatbot.
 The problem was that the workflow had too many repeated coordination steps:
 
 Define the task.
+
 Scope the feature.
+
 Create the branch.
+
 Run the agent.
+
 Open the PR.
+
 Request review.
+
 Apply feedback.
+
 Update dependent branches.
+
 Continue the loop.
 
 \`gmwyd\` is my attempt to make that workflow more repeatable.
@@ -580,44 +807,94 @@ That is the part I care about most.
 
 The tool is one expression of the workflow.
 
-The workflow is the real lesson.`,
+The workflow is the real lesson.
+
+In my view, the best agentic tools will not just expose a chat window. They will encode engineering process.
+
+They will understand branches.
+
+They will understand PRs.
+
+They will understand review loops.
+
+They will understand test gates.
+
+They will understand dependency sequencing.
+
+They will understand when to ask.
+
+They will understand when to stop.
+
+That is the direction I care about.
+
+Not "AI writes code."
+
+AI participates in a controlled engineering system.`,
     },
     {
-      title: "Post 12 — Screenshot-AI and Frontend Iteration Loops",
+      id: "screenshot-ai",
+      tocLabel: "Frontend & screenshots",
+      heading: "Screenshot-AI and Frontend Iteration Loops",
       body: `A separate area where agentic engineering gets interesting is frontend iteration.
 
 This is where screenshot-based workflows are useful.
+
+Frontend work has a specific challenge: many problems are visual.
+
+You can describe them in text, but it is often inefficient.
+
+Spacing is off.
+
+Hierarchy is unclear.
+
+The layout does not match the design.
+
+The component feels visually inconsistent.
+
+The page works technically, but it does not look right.
+
+A screenshot gives the agent a different kind of context.
 
 Instead of only describing what is wrong with a UI, you can show the current state, compare it to the intended state, and let the agent reason from the visual difference.
 
 That creates a tighter loop:
 
 Generate or edit the UI.
+
 Run the app.
+
 Take a screenshot.
+
 Compare against the target.
+
 Identify visual issues.
+
 Apply fixes.
+
 Repeat.
 
-This is especially useful for frontend work because many issues are easier to see than explain.
+That is useful because frontend iteration is not just about producing code. It is about producing a rendered experience.
 
-Spacing is off.
-Hierarchy is unclear.
-The layout does not match the design.
-The component feels visually inconsistent.
-The page works technically, but does not look right.
+A component can be technically correct and visually wrong.
 
-Screenshot-AI is interesting to me because it makes visual feedback part of the engineering loop.
+A page can pass tests and still feel broken.
+
+A layout can use the right data and still fail because the spacing, hierarchy, or visual rhythm is off.
+
+Screenshot-AI is interesting because it makes visual feedback part of the engineering loop.
 
 It is not just code generation.
 
 It is:
 
 Code.
+
 Render.
+
 Inspect.
+
 Adjust.
+
 Repeat.
 
 That is the broader agentic engineering pattern showing up again.
@@ -629,7 +906,9 @@ The value is a loop that can observe the result and improve it.
 For frontend work, screenshots are one of the cleanest ways to close that loop.`,
     },
     {
-      title: "Post 13 — Where I Think Agentic Engineering Goes Next",
+      id: "whats-next",
+      tocLabel: "Where it goes next",
+      heading: "Where I Think Agentic Engineering Goes Next",
       body: `I do not think agentic engineering eliminates the engineer.
 
 I think it changes where engineering judgment lives.
@@ -638,14 +917,14 @@ Less time manually typing every line.
 
 More time defining:
 
-• what should be built
-• how the work should be scoped
-• which agent should do it
-• what constraints matter
-• what quality gates must pass
-• when to stop the loop
-• what tradeoffs are acceptable
-• what should never be automated
+* what should be built
+* how the work should be scoped
+* which agent should do it
+* what constraints matter
+* what quality gates must pass
+* when to stop the loop
+* what tradeoffs are acceptable
+* what should never be automated
 
 That is the shift.
 
@@ -655,15 +934,15 @@ The future is not one giant autonomous agent that does everything perfectly.
 
 The future is composed systems:
 
-• specialized agents
-• local and cloud model routing
-• isolated worktrees
-• PR review loops
-• test gates
-• memory
-• rollback
-• traceability
-• human approval at the right points
+* specialized agents
+* local and cloud model routing
+* isolated worktrees
+* PR review loops
+* test gates
+* memory
+* rollback
+* traceability
+* human approval at the right points
 
 That is what I mean by agentic engineering.
 
@@ -678,6 +957,42 @@ It is software engineering fundamentals applied to AI-native development.
 The people who get the most leverage from AI will not be the ones who blindly trust it.
 
 They will be the ones who know how to design the system around it.`,
+    },
+    {
+      id: "main-lesson",
+      tocLabel: "The main lesson",
+      heading: "The Main Lesson",
+      body: `The biggest lesson from this whole progression is that agentic engineering is not primarily about making AI more autonomous.
+
+It is about making AI useful inside a disciplined engineering system.
+
+The model matters.
+
+But the workflow matters more than people think.
+
+A strong model with a weak process can destroy a repo quickly.
+
+A slightly weaker model inside a good process can still produce useful work.
+
+That is why I keep coming back to the same ideas:
+
+Scope the work.
+
+Isolate the branch.
+
+Review the diff.
+
+Run the checks.
+
+Update dependent PRs.
+
+Control the loop.
+
+Keep human judgment in the right places.
+
+Agentic engineering is not the absence of software engineering discipline.
+
+It is what happens when software engineering discipline becomes the container for AI-driven work.`,
     },
   ],
 };
