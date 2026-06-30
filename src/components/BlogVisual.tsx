@@ -1,5 +1,5 @@
 import { Fragment, type ReactNode } from "react";
-import type { Visual, VisualPanel } from "@/blog";
+import type { Visual, VisualPanel, VisualLane } from "@/blog";
 
 // Conceptual, non-technical visuals woven into the prose. Plain HTML — no Mermaid,
 // no expand chrome — so they read as part of the writing, not an engineering exhibit.
@@ -40,6 +40,35 @@ function Steps({
             {loopLabel ?? "repeat"}
           </span>
         )}
+      </div>
+      {caption && <Caption>{caption}</Caption>}
+    </figure>
+  );
+}
+
+function Lanes({ lanes, caption }: { lanes: VisualLane[]; caption?: string }) {
+  return (
+    <figure className="my-7">
+      <div className="space-y-2.5 rounded-2xl bg-surface/40 px-4 py-5">
+        {lanes.map((lane) => (
+          <div key={lane.label} className="flex flex-wrap items-center gap-x-2 gap-y-2">
+            <span className="w-24 shrink-0 font-mono text-xs text-accent-2">
+              {lane.label}
+            </span>
+            {lane.steps.map((s, i) => (
+              <Fragment key={i}>
+                <span className="rounded-full border border-border bg-bg/50 px-3 py-1 text-sm text-fg">
+                  {s}
+                </span>
+                {i < lane.steps.length - 1 && (
+                  <span aria-hidden className="text-accent">
+                    →
+                  </span>
+                )}
+              </Fragment>
+            ))}
+          </div>
+        ))}
       </div>
       {caption && <Caption>{caption}</Caption>}
     </figure>
@@ -129,6 +158,8 @@ export default function BlogVisual({ visual }: { visual: Visual }) {
       return <Steps {...visual} />;
     case "split":
       return <Split {...visual} />;
+    case "lanes":
+      return <Lanes {...visual} />;
     case "frame":
       return <Frame {...visual} />;
   }
