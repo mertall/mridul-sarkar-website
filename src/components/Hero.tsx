@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { hero, socials } from "@/content";
 
 const cta =
@@ -26,6 +27,12 @@ export default function Hero() {
         >
           Email me
         </a>
+        <Link
+          className={`${cta} border border-border text-fg hover:bg-surface`}
+          href="/blog/agentic-engineering"
+        >
+          Writing
+        </Link>
         <a
           className={`${cta} border border-border text-fg hover:bg-surface`}
           href={socials.resume}
