@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { Fragment, type ReactNode } from "react";
 import Link from "next/link";
 import Footer from "@/components/Footer";
-import Architecture from "@/components/Architecture";
+import BlogVisual from "@/components/BlogVisual";
 import { agenticEngineering as series } from "@/blog";
 import { hero } from "@/content";
 
@@ -32,43 +33,51 @@ function inline(text: string) {
   );
 }
 
-// Blank lines separate blocks. A block is rendered as: a bullet list ("* "/"• "),
-// a pull-quote ("> "), or a paragraph (internal newlines preserved).
-function renderBody(body: string) {
-  return body.split(/\n{2,}/).map((block, i) => {
-    const lines = block.split("\n");
+// Renders one block: a pull-quote ("> "), a bullet list ("* "/"• "), or a paragraph.
+function renderBlock(block: string, key: number) {
+  const lines = block.split("\n");
 
-    if (lines.every((l) => l.startsWith("> "))) {
-      return (
-        <blockquote
-          key={i}
-          className="my-6 border-l-2 border-accent pl-5 text-xl font-medium leading-snug text-fg"
-        >
-          {lines.map((l, j) => (
-            <span key={j} className="block">
-              {inline(l.slice(2))}
-            </span>
-          ))}
-        </blockquote>
-      );
-    }
-
-    if (lines.every((l) => l.startsWith("* ") || l.startsWith("• "))) {
-      return (
-        <ul key={i} className="my-4 list-disc space-y-1 pl-6 text-muted">
-          {lines.map((l, j) => (
-            <li key={j}>{inline(l.slice(2))}</li>
-          ))}
-        </ul>
-      );
-    }
-
+  if (lines.every((l) => l.startsWith("> "))) {
     return (
-      <p key={i} className="my-4 whitespace-pre-line leading-relaxed text-muted">
-        {inline(block)}
-      </p>
+      <blockquote
+        key={key}
+        className="my-6 border-l-2 border-accent pl-5 text-xl font-medium leading-snug text-fg"
+      >
+        {lines.map((l, j) => (
+          <span key={j} className="block">
+            {inline(l.slice(2))}
+          </span>
+        ))}
+      </blockquote>
     );
-  });
+  }
+
+  if (lines.every((l) => l.startsWith("* ") || l.startsWith("• "))) {
+    return (
+      <ul key={key} className="my-4 list-disc space-y-1 pl-6 text-muted">
+        {lines.map((l, j) => (
+          <li key={j}>{inline(l.slice(2))}</li>
+        ))}
+      </ul>
+    );
+  }
+
+  return (
+    <p key={key} className="my-4 whitespace-pre-line leading-relaxed text-muted">
+      {inline(block)}
+    </p>
+  );
+}
+
+// Blank lines separate blocks. The visual is woven in right after the opening line.
+function renderBody(body: string, visual: ReactNode) {
+  const blocks = body.split(/\n{2,}/);
+  return blocks.map((block, i) => (
+    <Fragment key={i}>
+      {renderBlock(block, i)}
+      {i === 0 && visual}
+    </Fragment>
+  ));
 }
 
 export default function AgenticEngineering() {
@@ -129,15 +138,9 @@ export default function AgenticEngineering() {
                 {inline(s.heading)}
               </h2>
             </div>
-            <div className="mt-4">{renderBody(s.body)}</div>
-            {s.diagram && (
-              <Architecture
-                chart={s.diagram}
-                id={`blog-${s.id}`}
-                title={s.diagramLabel}
-                label="Diagram"
-              />
-            )}
+            <div className="mt-4">
+              {renderBody(s.body, s.visual ? <BlogVisual visual={s.visual} /> : null)}
+            </div>
           </section>
         ))}
       </article>
