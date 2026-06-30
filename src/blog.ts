@@ -9,6 +9,10 @@ export interface Section {
   tocLabel: string;
   heading: string;
   body: string;
+  /** Optional Mermaid source — rendered as the section's illustrating diagram. */
+  diagram?: string;
+  /** Caption for the diagram figure, e.g. "Claude plans, Codex codes". */
+  diagramLabel?: string;
 }
 
 export interface Series {
@@ -30,6 +34,15 @@ export const agenticEngineering: Series = {
       id: "rubber-duck",
       tocLabel: "Where it started",
       heading: "From ChatGPT as a Rubber Duck to Agentic Engineering",
+      diagramLabel: "AI-assisted thinking, 2022",
+      diagram: `flowchart LR
+  CTX["Context, but not the exact query"] --> GPT["ChatGPT — reasoning surface"]
+  GPT --> IDEA["The idea, the right words"]
+  IDEA --> ADAPT["Adapt the code"]
+  ADAPT --> TEST["Test it manually"]
+  TEST --> FIX["Fix what was wrong"]
+  FIX -->|next problem| CTX
+  ME(["Me — every step by hand"]) -.drives.-> GPT`,
       body: `I did not start with "agentic engineering."
 
 I started with ChatGPT in 2022 as a rubber duck for personal projects.
@@ -81,6 +94,18 @@ The next phase came from a very different environment.`,
       id: "secure-environments",
       tocLabel: "Learning the boundaries",
       heading: "Secure Environments Taught Me Boundaries",
+      diagramLabel: "Capability inside constraints",
+      diagram: `flowchart TD
+  TASK["A task"] --> MODEL["Model"]
+  subgraph Controls["The controls it runs inside"]
+    AC["Access control"] --> MODEL
+    LOG["Logging + audit"] --> MODEL
+    GATE["Approval gates"] --> MODEL
+    REV["Code review"] --> MODEL
+    RB["Rollback paths"] --> MODEL
+    OWN["Human ownership"] --> MODEL
+  end
+  MODEL --> OUT["Useful work, not reckless work"]`,
       body: `For most of my tenure in the federal space, AI was not allowed in the engineering workflow.
 
 That shaped how I thought about it.
@@ -151,6 +176,17 @@ How do I put the model inside a process where it can be useful without being rec
       id: "claude-code",
       tocLabel: "The first inflection point",
       heading: "Claude Code Was the First Real Inflection Point",
+      diagramLabel: "Magic box vs engineering frame",
+      diagram: `flowchart LR
+  TASK["A task in a real repo"] --> MAGIC["Magic box — just 'build this'"]
+  MAGIC --> BAD["Plausible but inconsistent"]
+  TASK --> FRAME
+  subgraph FRAME["Engineering frame"]
+    F1["Goal + architecture"]
+    F2["What to change / not touch"]
+    F3["Check-ins + quality bar + 'done'"]
+  end
+  FRAME --> GOOD["Decent decisions, prototypes in minutes"]`,
       body: `The first tool that genuinely changed how I built software was Claude Code.
 
 By December 2025, I had used plenty of AI coding workflows. I had tried tools like Windsurf and Cursor. They were useful, but I still preferred my own IDE experience combined with ChatGPT when search was not enough.
@@ -201,7 +237,7 @@ When I treated it like a capable engineer operating under constraints, the resul
 
 That became one of the first practical lessons:
 
-A strong coding agent is only as useful as the boundaries you give it.
+> A strong coding agent is only as useful as the boundaries you give it.
 
 Claude Code could produce working prototypes in minutes that previously would have taken days. That did not mean the prototypes were production-ready. It meant the time from idea to working surface area collapsed.
 
@@ -231,11 +267,21 @@ Which model is best for which role?`,
       id: "claude-plans-codex-codes",
       tocLabel: "Claude plans, Codex codes",
       heading: "Claude Plans, Codex Codes",
+      diagramLabel: "Role assignment inside a process",
+      diagram: `flowchart TD
+  HUM(["Human — scope, constraints, sequencing"]) --> CLAUDE["Claude — architect"]
+  CLAUDE --> PLAN["Plan + decomposition"]
+  PLAN --> TASKS["Scoped tasks"]
+  TASKS --> CODEX["Codex — implementation agent"]
+  CODEX --> GIT["Git isolates the work"]
+  GIT --> PR["PR — review boundary"]
+  PR --> LOOP["Review loop catches issues"]
+  LOOP --> SHIP{"Human decides what ships"}
+  SHIP -->|more work| CLAUDE`,
       body: `The first agentic architecture that really worked for me was simple:
 
-Claude plans.
-
-Codex codes.
+> Claude plans.
+> Codex codes.
 
 Claude Opus was strong at long-form planning and architecture. It was useful for understanding a broader system, decomposing work, identifying tradeoffs, and deciding what needed to happen first.
 
@@ -297,6 +343,12 @@ That is a different kind of engineering problem.`,
       id: "overwrite-sickness",
       tocLabel: "It's a process problem",
       heading: "AI Overwrite Sickness Is Usually a Process Problem",
+      diagramLabel: "Same agent, two processes",
+      diagram: `flowchart TD
+  AGENT["AI agent"] --> BAD["One branch · broad scope · no PR · no review"]
+  BAD --> MESS["Conflicts, overwrites, messy diffs"]
+  AGENT --> GOOD["Branch · scope · PR · review · pull latest"]
+  GOOD --> CLEAN["Clean, sequenced merge"]`,
       body: `One of the most common complaints I hear from engineers and friends using AI coding tools is:
 
 "AI keeps overwriting my work."
@@ -355,14 +407,24 @@ The more powerful the agent, the more important the process around it becomes.
 
 That became one of the central ideas in my workflow:
 
-Do not just make the model smarter.
-
-Make the environment safer.`,
+> Do not just make the model smarter.
+> Make the environment safer.`,
     },
     {
       id: "worktrees",
       tocLabel: "Worktrees & isolation",
       heading: "Worktrees Made Agents More Usable",
+      diagramLabel: "Isolated lanes, sequenced merges",
+      diagram: `flowchart TD
+  PLAN["One plan, three scopes"] --> WA["Worktree A — branch + PR"]
+  PLAN --> WB["Worktree B — branch + PR"]
+  PLAN --> WC["Worktree C — branch + PR"]
+  WA --> M1["PR A merges first"]
+  M1 -.pull latest.-> WB
+  M1 -.pull latest.-> WC
+  WB --> M2["PR B merges on fresh code"]
+  M2 -.pull latest.-> WC
+  WC --> M3["PR C merges on fresh code"]`,
       body: `Once I started using agents seriously, I needed a way to let them work without stepping on each other.
 
 That is where worktrees became important.
@@ -437,6 +499,14 @@ That is engineering judgment.`,
       id: "process-wrapper",
       tocLabel: "Wrapping the process in a skill",
       heading: "The First Skill I Built Was a Process Wrapper",
+      diagramLabel: "Judgment turned into a repeatable workflow",
+      diagram: `flowchart LR
+  HUM(["Human — feature scoping"]) --> SKILL
+  subgraph SKILL["Skill — enforces the sequence"]
+    direction LR
+    S1["Branch + worktree"] --> S2["Run agent"] --> S3["Open PR"] --> S4["Codex review"] --> S5["Apply feedback"] --> S6["Update dependent PRs"] --> S7["Merge"]
+  end
+  SKILL --> OUT["Repeatable — no work on stale code"]`,
       body: `Eventually, I got tired of manually coordinating the same workflow.
 
 Scope the feature.
@@ -511,6 +581,14 @@ You are building the operating procedure around the model.`,
       id: "pr-review-loops",
       tocLabel: "PR review loops",
       heading: "PR Review Loops Changed the Quality Bar",
+      diagramLabel: "Review until clean, then a human decides",
+      diagram: `flowchart TD
+  PR["Create PR from branch"] --> REQ["Comment @codex review"]
+  REQ --> FIND{"Findings?"}
+  FIND -->|yes| FIX["Apply findings + push"]
+  FIX --> REQ
+  FIND -->|none| HUMAN["Human final inspection"]
+  HUMAN --> MERGE["Merge"]`,
       body: `One of the most useful workflows I built was a PR review loop.
 
 The idea was simple.
@@ -589,6 +667,14 @@ It gets the PR into better shape before the human does the final inspection.`,
       id: "local-inference",
       tocLabel: "Going local",
       heading: "Why I Started Moving Toward Local Inference",
+      diagramLabel: "A private, controllable local layer",
+      diagram: `flowchart TD
+  DISC["Discord — interface"] --> GEMMA["Gemma — orchestrator · always on"]
+  GEMMA --> ROUTE["Qwen — tool router"]
+  ROUTE --> CHAT["Qwen — chat · always on"]
+  ROUTE --> PERS["Task personas · spin up and down"]
+  GEMMA --> PRIV["Private context stays on the machine"]
+  HEAVY["Heavy architecture + complex coding"] --> FRONTIER["Frontier model APIs"]`,
       body: `At one point, I started thinking seriously about local inference.
 
 Not because the API was too expensive.
@@ -670,6 +756,16 @@ The question is "which model belongs in which part of the system?"`,
       id: "loop-engineering",
       tocLabel: "Loop engineering",
       heading: "Loop Engineering Is the Next Step",
+      diagramLabel: "A loop with structure, not just 'run it again'",
+      diagram: `flowchart TD
+  OBJ["Clear objective"] --> PLAN["Plan"]
+  PLAN --> ACT["Act — scoped permissions"]
+  ACT --> CHECK{"Check — observable state"}
+  CHECK -->|fail| REPAIR["Repair"]
+  REPAIR --> RETRY["Retry"]
+  RETRY --> CHECK
+  CHECK -->|pass| REVIEW["Review gate"]
+  REVIEW --> STOP["Stop condition met"]`,
       body: `The next major shift for me was loop engineering.
 
 Prompt engineering is about asking the model for a good answer.
@@ -721,9 +817,8 @@ The future of agentic engineering is not just better models.
 
 It is better loops.
 
-A model can produce an answer.
-
-A loop can produce progress.
+> A model can produce an answer.
+> A loop can produce progress.
 
 That distinction matters.
 
@@ -761,6 +856,14 @@ Agentic engineering becomes powerful when the AI workflow reflects that reality.
       id: "gmwyd",
       tocLabel: "Building gmwyd",
       heading: "`gmwyd` Is an Artifact of the Workflow",
+      diagramLabel: "Composing the pieces into one system",
+      diagram: `flowchart LR
+  P["Planning"] --> SYS
+  E["Execution"] --> SYS
+  R["Review"] --> SYS
+  RP["Repair"] --> SYS
+  M["Merge discipline"] --> SYS
+  SYS["gmwyd — composed system"] --> OUT["Repeatable engineering workflow"]`,
       body: `One thing I started building from this agentic engineering workflow is \`gmwyd\`.
 
 I do not think of it as the center of the story.
@@ -835,6 +938,14 @@ AI participates in a controlled engineering system.`,
       id: "screenshot-ai",
       tocLabel: "Frontend & screenshots",
       heading: "Screenshot-AI and Frontend Iteration Loops",
+      diagramLabel: "Closing the visual loop",
+      diagram: `flowchart LR
+  EDIT["Edit the UI"] --> RUN["Run the app"]
+  RUN --> SHOT["Take a screenshot"]
+  SHOT --> CMP{"Matches the target?"}
+  CMP -->|no — visual diff| FIX["Apply fixes"]
+  FIX --> EDIT
+  CMP -->|yes| DONE["Rendered experience, not just code"]`,
       body: `A separate area where agentic engineering gets interesting is frontend iteration.
 
 This is where screenshot-based workflows are useful.
@@ -909,6 +1020,19 @@ For frontend work, screenshots are one of the cleanest ways to close that loop.`
       id: "whats-next",
       tocLabel: "Where it goes next",
       heading: "Where I Think Agentic Engineering Goes Next",
+      diagramLabel: "Composed systems, not one giant agent",
+      diagram: `flowchart TD
+  subgraph System["AI-native engineering system"]
+    AG["Specialized agents"]
+    RT["Local + cloud routing"]
+    WT["Isolated worktrees"]
+    RL["PR review loops"]
+    TG["Test gates"]
+    MEM["Memory"]
+    RB["Rollback + traceability"]
+  end
+  System --> HUMAN{"Human approval at the right points"}
+  HUMAN --> SHIP["Shipped work"]`,
       body: `I do not think agentic engineering eliminates the engineer.
 
 I think it changes where engineering judgment lives.
@@ -962,6 +1086,15 @@ They will be the ones who know how to design the system around it.`,
       id: "main-lesson",
       tocLabel: "The main lesson",
       heading: "The Main Lesson",
+      diagramLabel: "Discipline is the container for AI work",
+      diagram: `flowchart LR
+  subgraph Discipline["The container"]
+    direction LR
+    D1["Scope the work"] --> D2["Isolate the branch"] --> D3["Review the diff"] --> D4["Run the checks"] --> D5["Update dependent PRs"] --> D6["Control the loop"]
+  end
+  HUM(["Human judgment in the right places"]) -.-> Discipline
+  Discipline --> WORK["AI-driven work"]
+  WORK --> OUT["Useful work, safely"]`,
       body: `The biggest lesson from this whole progression is that agentic engineering is not primarily about making AI more autonomous.
 
 It is about making AI useful inside a disciplined engineering system.
@@ -990,9 +1123,8 @@ Control the loop.
 
 Keep human judgment in the right places.
 
-Agentic engineering is not the absence of software engineering discipline.
-
-It is what happens when software engineering discipline becomes the container for AI-driven work.`,
+> Agentic engineering is not the absence of software engineering discipline.
+> It is what happens when software engineering discipline becomes the container for AI-driven work.`,
     },
   ],
 };

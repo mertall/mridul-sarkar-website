@@ -28,10 +28,13 @@ export default function Architecture({
   chart,
   id,
   title,
+  label = "Architecture",
 }: {
   chart: string;
   id: string;
   title?: string;
+  /** Caption shown on the figure, e.g. "Architecture" or "Diagram". */
+  label?: string;
 }) {
   const previewRef = useRef<HTMLDivElement>(null);
   const zoomRef = useRef<HTMLDivElement>(null);
@@ -100,7 +103,7 @@ export default function Architecture({
   return (
     <figure className="mt-5 rounded-xl border border-border bg-bg/40 p-4">
       <figcaption className="mb-3 flex items-center justify-between">
-        <span className="font-mono text-xs text-accent">Architecture</span>
+        <span className="font-mono text-xs text-accent">{label}</span>
         <button
           type="button"
           onClick={openZoom}
@@ -124,7 +127,7 @@ export default function Architecture({
         <div className="arch-dialog-inner">
           <div className="arch-dialog-bar">
             <span className="font-mono text-xs text-accent">
-              {title ? `${title} — architecture` : "Architecture"}
+              {title ?? label}
             </span>
             <button
               type="button"

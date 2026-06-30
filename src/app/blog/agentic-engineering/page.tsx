@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/components/Footer";
+import Architecture from "@/components/Architecture";
 import { agenticEngineering as series } from "@/blog";
 import { hero } from "@/content";
 
@@ -31,13 +32,28 @@ function inline(text: string) {
   );
 }
 
-// Blank lines separate blocks. A block whose lines all start with "* " or "• " is a
-// list; otherwise it's a paragraph (internal newlines preserved via whitespace-pre-line).
+// Blank lines separate blocks. A block is rendered as: a bullet list ("* "/"• "),
+// a pull-quote ("> "), or a paragraph (internal newlines preserved).
 function renderBody(body: string) {
   return body.split(/\n{2,}/).map((block, i) => {
     const lines = block.split("\n");
-    const isList = lines.every((l) => l.startsWith("* ") || l.startsWith("• "));
-    if (isList) {
+
+    if (lines.every((l) => l.startsWith("> "))) {
+      return (
+        <blockquote
+          key={i}
+          className="my-6 border-l-2 border-accent pl-5 text-xl font-medium leading-snug text-fg"
+        >
+          {lines.map((l, j) => (
+            <span key={j} className="block">
+              {inline(l.slice(2))}
+            </span>
+          ))}
+        </blockquote>
+      );
+    }
+
+    if (lines.every((l) => l.startsWith("* ") || l.startsWith("• "))) {
       return (
         <ul key={i} className="my-4 list-disc space-y-1 pl-6 text-muted">
           {lines.map((l, j) => (
@@ -46,6 +62,7 @@ function renderBody(body: string) {
         </ul>
       );
     }
+
     return (
       <p key={i} className="my-4 whitespace-pre-line leading-relaxed text-muted">
         {inline(block)}
@@ -99,15 +116,28 @@ export default function AgenticEngineering() {
           </ol>
         </nav>
 
-        {series.sections.map((s) => (
-          <section key={s.id} className="mt-12 border-t border-border pt-12">
-            <h2
-              id={s.id}
-              className="scroll-mt-20 text-2xl font-semibold tracking-tight text-fg"
-            >
-              {inline(s.heading)}
-            </h2>
+        {series.sections.map((s, i) => (
+          <section key={s.id} className="mt-14 border-t border-border pt-12">
+            <div className="flex items-baseline gap-3">
+              <span className="font-mono text-sm text-accent">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <h2
+                id={s.id}
+                className="scroll-mt-20 text-2xl font-semibold tracking-tight text-fg"
+              >
+                {inline(s.heading)}
+              </h2>
+            </div>
             <div className="mt-4">{renderBody(s.body)}</div>
+            {s.diagram && (
+              <Architecture
+                chart={s.diagram}
+                id={`blog-${s.id}`}
+                title={s.diagramLabel}
+                label="Diagram"
+              />
+            )}
           </section>
         ))}
       </article>
